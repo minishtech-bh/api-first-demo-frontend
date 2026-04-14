@@ -2,7 +2,7 @@ import { defineConfig } from 'orval';
 
 export default defineConfig({
   todo: {
-    input: '../open-api/openapi.yaml',
+    input: './open-api/openapi.yaml',
     output: {
       mode: 'tags-split',
       target: './src/api/generated',
