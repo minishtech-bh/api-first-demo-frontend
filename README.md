@@ -119,6 +119,45 @@ git commit -m "chore: update api spec to latest"
 
 ---
 
+## 코드 자동생성 타이밍
+
+### 백엔드와의 차이
+
+백엔드는 `compileJava.dependsOn openApiGenerate` 설정으로 빌드 시 자동 생성됩니다.  
+프론트엔드는 현재 `predev` / `prebuild` npm lifecycle hook으로 연결되어 있습니다.
+
+```json
+"predev": "orval",    ← npm run dev 실행 전 자동 실행
+"prebuild": "orval",  ← npm run build 실행 전 자동 실행
+```
+
+`npm run dev` 하나로 orval 재생성 + 개발 서버 시작이 이어집니다.
+
+### 임시 조치 / 개선 포인트
+
+`predev`로 연결하는 방식은 **dev 서버 시작할 때마다 orval이 실행**됩니다.  
+스펙 변경이 없어도 매번 돌기 때문에 시작 시간이 약간 늘어납니다 (약 1-2초).
+
+더 나은 방향으로 고려할 수 있는 방법들:
+
+```
+1. Vite 플러그인으로 연결
+   → vite.config.ts에서 yaml 파일 변경 감지 시에만 orval 실행
+   → 현재 공식 플러그인 없음, 커스텀 플러그인 작성 필요
+
+2. CI에서만 강제 실행
+   → 로컬은 개발자가 수동 실행, CI 빌드 단계에서 orval → tsc 순으로 강제
+   → 로컬 자유도는 높지만 "깜빡하고 push" 가능성 있음
+
+3. git pre-commit hook (husky)
+   → commit 전에 orval 실행 + tsc 체크로 타입 불일치 방지
+   → 가장 안전하지만 commit이 느려짐
+```
+
+현재는 1번 구현 비용 대비 효과가 불명확해서 `predev` 방식을 임시로 유지합니다.
+
+---
+
 ## 환경변수
 
 ```bash

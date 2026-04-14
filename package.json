@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "orval",
     "dev": "vite",
+    "prebuild": "orval",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
